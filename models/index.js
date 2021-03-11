@@ -2,6 +2,9 @@ const Sequelize = require('sequelize');
 const db = new Sequelize('postgres://localhost:5432/wikistack', {
   logging: false,
 });
+const makeASlug = (title) => {
+  return title.replace(/\s+/g, '_').replace(/\W/g, '');
+};
 
 const Page = db.define('page', {
   title: {
@@ -22,6 +25,9 @@ const Page = db.define('page', {
     type: Sequelize.ENUM('open', 'closed'),
     defaultValue: 'closed',
   },
+});
+Page.beforeValidate((page) => {
+  page.slug = makeASlug(page.title);
 });
 
 const User = db.define('user', {

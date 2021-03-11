@@ -5,7 +5,8 @@ const path = require('path');
 const { db, Page, User } = require('./models');
 const client = require('./db/index');
 const layout = require('./views/layout');
-const wiki = require('./wiki');
+const wiki = require('./routes/wiki');
+const users = require('./routes/users');
 
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'static')));
@@ -16,15 +17,16 @@ db.authenticate().then(() => {
 });
 
 app.use('/wiki', wiki);
+app.use('/users', users);
 
 app.get('/', (req, res, next) => {
-  res.send(layout(' '));
+  res.redirect('/wiki');
 });
 
 const PORT = 3001;
 
 const init = async () => {
-  await db.sync({ force: true });
+  await db.sync();
   app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}!`);
   });
